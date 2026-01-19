@@ -4,7 +4,7 @@
     id("org.jetbrains.intellij.platform") version "2.10.5"
 }
 
-val pluginVersion = "1.2.3"
+val pluginVersion = "1.2.4"
 
 group = "de.bungee.idea.plugins.uifile"
 version = pluginVersion
