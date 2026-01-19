@@ -121,6 +121,10 @@
     <lang.syntaxHighlighterFactory
       language="UI"
       implementationClass="de.bungee.uifile.highlighter.UISyntaxHighlighterFactory"/>
+     <!-- AutoCompletion -->
+    <completion.contributor
+      language="UI"
+      implementationClass="de.bungee.uifile.completion.UICompletionContributor"/>
     <!-- Color Settings Page -->
     <colorSettingsPage
       implementation="de.bungee.uifile.highlighter.UIColorSettingsPage"/>
