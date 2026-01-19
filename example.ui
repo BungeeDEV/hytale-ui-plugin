@@ -9,6 +9,13 @@ $C = "../Common.ui";
 Group {
     Anchor: (Width: 400, Height: 350);
     Background: #1a1a2e(0.95);
+
+    Label {
+        Text: "Test Label";
+        Style: (FontSize: 18, TextColor: #ffffff, RenderBold: true, HorizontalAlignment: Center);
+        Anchor: (Top: 10, Left: 10, Right: 10);
+    }
+
     LayoutMode: Top;
     Padding: (Full: 20);
 
