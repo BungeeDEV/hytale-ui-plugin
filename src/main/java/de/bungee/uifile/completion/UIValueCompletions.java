@@ -20,9 +20,19 @@ public class UIValueCompletions {
         "Bottom",
         "BottomScrolling",
         "Left",
+        "LeftCenter",
         "LeftCenterWrap",
         "Right",
+        "RightCenter",
         "Full"
+    );
+
+    /**
+     * Direction values (Horizontal/Vertical)
+     */
+    public static final List<String> DIRECTIONS = Arrays.asList(
+        "Horizontal",
+        "Vertical"
     );
 
     /**
@@ -64,16 +74,20 @@ public class UIValueCompletions {
      */
     public static List<String> getValueSuggestionsForProperty(String propertyName) {
         return switch (propertyName) {
-            case "LayoutMode" -> LAYOUT_MODES;
+            case "LayoutMode", "Layout" -> LAYOUT_MODES;
+            case "Direction" -> DIRECTIONS;
             case "Visible", "Enabled", "RenderBold", "RenderUppercase", "RenderItalics",
                  "Wrap", "HitTestVisible", "AutoScrollDown", "KeepScrollPosition",
                  "AspectRatio", "Checked", "ScrollEnabled", "ScrollbarVisible",
-                 "HorizontalScroll", "VerticalScroll", "ReadOnly", "Password",
-                 "CloseOnClickOutside", "OnlyVisibleWhenHovered" -> BOOLEAN_VALUES;
+                 "HorizontalScroll", "VerticalScroll", "ReadOnly", "IsReadOnly",
+                 "Password", "CloseOnClickOutside", "OnlyVisibleWhenHovered",
+                 "AutoGrow", "ShowLabel", "ShowQualityBackground", "RenderItemQualityBackground",
+                 "AreItemsDraggable", "AllowUnselection", "ShowScrollbar" -> BOOLEAN_VALUES;
             case "HorizontalAlignment" -> HORIZONTAL_ALIGNMENT;
             case "VerticalAlignment" -> VERTICAL_ALIGNMENT;
             case "Alignment" -> Arrays.asList("Center", "Start", "End");
             case "FontName" -> FONT_NAMES;
+            case "PanelAlign" -> Arrays.asList("Top", "Middle", "Bottom", "Left", "Center", "Right");
             default -> Collections.emptyList();
         };
     }
@@ -82,7 +96,7 @@ public class UIValueCompletions {
      * Get description for a specific value
      */
     public static String getValueDescription(String propertyName, String value) {
-        if ("LayoutMode".equals(propertyName)) {
+        if ("LayoutMode".equals(propertyName) || "Layout".equals(propertyName)) {
             return switch (value) {
                 case "Top" -> "Arrange children from top, no scrolling";
                 case "TopScrolling" -> "Arrange children from top with vertical scrolling";
@@ -92,8 +106,10 @@ public class UIValueCompletions {
                 case "Bottom" -> "Arrange children from bottom, no scrolling";
                 case "BottomScrolling" -> "Arrange children from bottom with scrolling";
                 case "Left" -> "Arrange children from left";
+                case "LeftCenter" -> "Arrange children from left, centered vertically";
                 case "LeftCenterWrap" -> "Arrange children from left, centered, with wrapping";
                 case "Right" -> "Arrange children from right";
+                case "RightCenter" -> "Arrange children from right, centered vertically";
                 case "Full" -> "Fill entire space";
                 default -> "";
             };

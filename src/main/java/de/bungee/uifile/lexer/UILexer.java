@@ -36,61 +36,192 @@ public class UILexer extends LexerBase {
     public static final UITokenType WHITE_SPACE = new UITokenType("WHITE_SPACE");
     public static final UITokenType BAD_CHARACTER = new UITokenType("BAD_CHARACTER");
 
-    // Known Components - erweitert basierend auf den UI-Dateien
+    // Known Components - vollständige Liste aus Hytale UI System
     private static final String[] COMPONENTS = {
-        // Standard UI Components
-        "Group", "Label", "Button", "Input", "Panel", "Container",
+        // Layout Components
+        "Group", "Container", "Panel", "DecoratedContainer", "SectionContainer",
+        "Row", "RowHintContainer", "RowLabelContainer", "VBox", "HBox", "Wrapper",
+        "ScrollGroup", "Content",
+
+        // Button Components
+        "Button", "TextButton", "ActionButton", "BackButton", "ColumnButton",
+        "PrimaryButton", "SecondaryButton", "ToggleButton", "ToolButton",
+        "PrimaryTextButton", "SecondaryTextButton", "TertiaryTextButton",
+        "DestructiveTextButton", "SmallSecondaryTextButton", "TagTextButton",
+        "ItemSlotButton", "TabButton",
+
+        // Text/Label Components
+        "Label", "TitleLabel", "CenteredTitleLabel", "Title", "PanelTitle",
+        "RowLabel", "StatNameLabel", "StatNameValueLabel", "HotkeyLabel", "LabelAffix",
+
+        // Input Components
+        "TextField", "CompactTextField", "MultilineTextField", "NumberField",
+        "SliderNumberField", "FloatSliderNumberField",
+
+        // Selection Components
+        "CheckBox", "LabeledCheckBox", "DropdownBox", "BlockSelector",
+
+        // Slider Components
+        "Slider", "FloatSlider",
 
         // Item/Inventory Components
-        "ItemIcon", "ItemSlot", "ItemSlotButton", "ItemGrid",
+        "ItemIcon", "ItemSlot", "ItemGrid", "ItemPreviewComponent",
+        "BlockSelector", "BlockSelectorStyle",
 
-        // Interactive Components
-        "TextButton", "Slider", "FloatSlider", "CheckBox", "DropdownBox",
-        "TextField", "NumberField",
+        // Image Components
+        "Image", "BackgroundImage", "AssetImage", "Icon", "Sprite",
 
-        // Specialized Components (können vom Entwickler definiert sein)
-        "DecoratedContainer", "PageOverlay"
+        // Progress Components
+        "ProgressBar", "CircularProgressBar",
+
+        // Tab/Navigation Components
+        "TabNavigation", "Tab", "TabSeparator", "Pages", "Page",
+        "MenuItem", "Legend",
+
+        // Separators
+        "Separator", "Sep", "VerticalSeparator", "Divider",
+        "ContentSeparator", "PanelSeparatorFancy",
+        "ActionButtonSeparator", "VerticalActionButtonSeparator",
+
+        // Containers & Overlays
+        "ActionButtonContainer", "PageOverlay", "Overlay", "OfflineOverlay",
+        "PopupMenuLayerStyle", "SceneBlur",
+
+        // Specialized Components
+        "CharacterPreviewComponent", "PlayerPreviewComponent",
+        "HeaderSearch", "HotkeyRow", "DoubleArrowKeyHotkeyRow",
+        "EditionCard", "ReorderableListGrip", "DefaultSpinner",
+
+        // Style Components
+        "Style", "LabelStyle", "TextButtonStyle", "ButtonStyle", "CheckBoxStyle",
+        "DropdownBoxStyle", "ColorPickerDropdownBoxStyle", "FileDropdownBoxStyle",
+        "InputFieldStyle", "ItemGridStyle", "PatchStyle", "PopupMenuLayerStyle",
+        "ScrollbarStyle", "SliderStyle", "TabNavigationStyle", "TextTooltipStyle",
+        "ColorPickerStyle"
     };
 
-    // Known Properties - stark erweitert basierend auf den UI-Dateien
+    // Known Properties - vollständige Liste aus Hytale UI System
     private static final String[] PROPERTIES = {
-        // Layout & Positioning
-        "Anchor", "LayoutMode", "Padding", "FlexWeight",
+        // Core Layout & Positioning
+        "Anchor", "LayoutMode", "Layout", "Padding", "Margin", "FlexWeight",
+        "Spacing", "Direction", "Alignment", "PanelAlign",
 
         // Size Properties
-        "Width", "Height", "Full",
+        "Width", "Height", "Full", "Size",
+        "MaxWidth", "MinWidth", "MaxHeight", "MinHeight",
+        "CollapsedWidth", "ExpandedWidth",
 
-        // Directional Anchor Properties
+        // Directional Properties
         "Top", "Bottom", "Left", "Right",
         "Horizontal", "Vertical",
+        "HorizontalPadding", "VerticalPadding",
+        "HorizontalBorder", "VerticalBorder",
 
-        // Alignment
-        "Alignment", "HorizontalAlignment", "VerticalAlignment",
+        // Alignment Properties
+        "HorizontalAlignment", "VerticalAlignment",
         "Center", "Start", "End",
 
-        // Visual Properties
-        "Background", "Border", "Color", "TexturePath",
-        "Visible", "HitTestVisible",
+        // Visual/Background Properties
+        "Background", "Border", "Color", "TextColor", "OutlineColor",
+        "TexturePath", "MaskTexturePath", "IconTexturePath", "BarTexturePath",
+        "LabelMaskTexturePath", "EffectTexturePath",
+        "DefaultBackground", "HoveredBackground", "PressedBackground",
+        "ButtonBackground", "ButtonFill", "SelectedEntryIconBackground",
+        "SlotBackground", "OpacitySelectorBackground", "OverlayColor",
+
+        // Visibility & Interaction
+        "Visible", "HitTestVisible", "Enabled", "Disabled",
+        "OnlyVisibleWhenHovered", "CloseOnClickOutside",
 
         // Text & Font Properties
-        "Text", "TextColor", "FontSize",
-        "RenderBold", "RenderUppercase", "Wrap",
-        "PlaceholderText", "MaxLength",
+        "Text", "PlaceholderText", "TooltipText", "PanelTitleText",
+        "FontSize", "FontName", "LetterSpacing",
+        "RenderBold", "RenderUppercase", "RenderItalics", "Wrap",
+        "MaxLength", "MaxVisibleLines",
+        "TextSpans", "TooltipTextSpans",
 
-        // Style Properties
-        "Style", "Default", "Hovered", "Pressed", "Disabled",
-        "LabelStyle", "ScrollbarStyle", "Sounds",
+        // Style Properties & References
+        "Style", "LabelStyle", "ButtonStyle", "CheckBoxStyle", "TabStyle",
+        "ScrollbarStyle", "SliderStyle", "InputFieldStyle", "ItemGridStyle",
+        "TextTooltipStyle", "TooltipStyle", "PopupStyle", "PlaceholderStyle",
+        "PanelScrollbarStyle", "ColorPickerStyle",
+        "Default", "Hovered", "Pressed", "Disabled", "Checked", "Unchecked",
+        "HoveredLabelStyle", "PressedLabelStyle", "DefaultLabelStyle",
+        "SelectedEntryLabelStyle", "EntryLabelStyle",
+        "SelectedStyle", "SelectedButtonStyle", "CheckedStyle",
+        "SelectedTab", "SelectedTabStyle",
 
-        // Item Slot Specific
-        "ShowQualityBackground", "ShowQuantity",
-        "SlotSize", "SlotIconSize", "SlotSpacing", "SlotBackground",
-        "SlotsPerRow",
+        // Input & Form Properties
+        "Value", "MinValue", "MaxValue", "Step",
+        "Format", "MaxDecimalPlaces", "NumberFieldMaxDecimalPlaces",
+        "ReadOnly", "IsReadOnly", "Password", "PasswordChar",
+        "AutoGrow", "AutoScrollDown", "KeepScrollPosition",
 
-        // Slider Properties
-        "Min", "Max", "Step", "Value",
+        // Item/Inventory Properties
+        "ShowQualityBackground", "RenderItemQualityBackground", "ShowQuantity",
+        "SlotSize", "SlotIconSize", "SlotSpacing", "SlotsPerRow",
+        "Capacity", "Count", "PerRow",
+        "DefaultItemIcon", "SlotDeleteIcon", "SlotDropIcon",
+        "SlotHoverOverlay", "BrokenSlotBackgroundOverlay", "BrokenSlotIconOverlay",
+        "QuantityPopupSlotOverlay", "ItemScale", "AreItemsDraggable",
+        "DurabilityBar", "DurabilityBarAnchor", "DurabilityBarBackground",
 
-        // Number Field Properties
-        "Format", "MaxDecimalPlaces", "MinValue", "MaxValue"
+        // Slider & Progress Properties
+        "Min", "Max", "Bar", "Handle",
+        "DraggedHandle", "HoveredHandle",
+
+        // Icon & Image Properties
+        "Icon", "IconWidth", "IconHeight", "IconAnchor", "IconOpacity",
+        "IconSelected", "IconTexturePath", "Image", "ImageUW",
+        "Source", "Stretch", "AspectRatio", "Tint", "Scale",
+        "Frame", "FramesPerSecond",
+
+        // Dropdown & Selection Properties
+        "Items", "SelectedIndex", "AllowUnselection", "MaxSelection",
+        "EntryHeight", "EntryIconWidth", "EntryIconHeight",
+        "DropdownBackground", "EntrySounds",
+
+        // Scrollbar Properties
+        "ScrollEnabled", "ScrollbarVisible", "ShowScrollbar",
+        "HorizontalScroll", "VerticalScroll",
+
+        // Sound Properties
+        "Sounds", "TabSounds", "ChangedSound", "CollapseSound", "ExpandSound",
+        "ItemStackActivateSound",
+        "Volume", "MinPitch", "MaxPitch",
+
+        // Tooltip Properties
+        "TextTooltipShowDelay", "TextTooltipHideDelay",
+
+        // Navigation & Tabs
+        "Pages", "SelectedTab",
+
+        // Padding/Margin Advanced
+        "ContentPadding", "ButtonPadding",
+
+        // Effect & Animation
+        "EffectWidth", "EffectHeight", "EffectOffset",
+
+        // Offset & Transform
+        "Offset", "ShadowColor", "ShadowOffset",
+
+        // Decoration & Border
+        "Decoration", "TextFieldDecoration",
+        "BorderColor", "BorderWidth", "BorderRadius",
+
+        // Action & Events
+        "ActionName", "Activate", "OnClick", "OnChange", "OnClose",
+
+        // Input Binding
+        "InputBindingKey", "InputBindingKeyPrefix", "KeyBindingLabel",
+        "BindingLabelStyle",
+
+        // Miscellaneous
+        "Id", "ShowLabel", "InfoDisplay",
+        "Anchor", "Frame", "MouseHover",
+        "PanelWidth", "ReorderableListGrip",
+        "NumberFieldContainerAnchor", "NumberFieldStyle",
+        "ClearButtonStyle"
     };
 
     @Override

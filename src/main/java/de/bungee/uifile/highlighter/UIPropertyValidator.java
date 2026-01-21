@@ -31,6 +31,14 @@ public class UIPropertyValidator implements Annotator {
             return;
         }
 
+        // Check if we're inside a complex property value block (e.g., Padding: (Full: 20))
+        String complexPropertyContext = findComplexPropertyContext(element);
+        if (complexPropertyContext != null) {
+            // Validate against sub-properties for this complex property
+            validateComplexPropertySubProperty(element, holder, text, complexPropertyContext);
+            return;
+        }
+
         // Check if we're inside a Style block
         if (isInsideStyleBlock(element)) {
             // Validate against Style properties
@@ -71,6 +79,112 @@ public class UIPropertyValidator implements Annotator {
     }
 
     /**
+     * Find if we're inside a complex property value block (e.g., Padding: (Full: 20)) Returns the property name (e.g.,
+     * "Padding") if inside such a block
+     */
+    private String findComplexPropertyContext(PsiElement element) {
+        PsiElement current = element;
+        int parenDepth = 0;
+
+        // Search backwards for matching parentheses
+        while (current != null) {
+            String text = current.getText().trim();
+
+            if (text.equals(")")) {
+                parenDepth++;
+            } else if (text.equals("(")) {
+                parenDepth--;
+                if (parenDepth < 0) {
+                    // Found the opening parenthesis, now look for the property name before it
+                    PsiElement prev = PsiTreeUtil.prevLeaf(current);
+                    while (prev != null) {
+                        String prevText = prev.getText().trim();
+                        if (prevText.equals(":")) {
+                            // Found colon, check for property name before it
+                            PsiElement beforeColon = PsiTreeUtil.prevLeaf(prev);
+                            while (beforeColon != null) {
+                                String beforeColonText = beforeColon.getText().trim();
+                                if (!beforeColonText.isEmpty() && !beforeColonText.equals("\n")
+                                    && !beforeColonText.equals("\r\n")) {
+                                    // Check if this is a complex property (Padding, Margin, Anchor, etc.)
+                                    if (isComplexProperty(beforeColonText)) {
+                                        return beforeColonText;
+                                    }
+                                    break;
+                                }
+                                beforeColon = PsiTreeUtil.prevLeaf(beforeColon);
+                            }
+                            break;
+                        } else if (!prevText.isEmpty() && !prevText.equals("\n") && !prevText.equals("\r\n")) {
+                            break;
+                        }
+                        prev = PsiTreeUtil.prevLeaf(prev);
+                    }
+                    break;
+                }
+            }
+
+            current = PsiTreeUtil.prevLeaf(current);
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if a property name represents a complex property with sub-properties
+     */
+    private boolean isComplexProperty(String propertyName) {
+        return propertyName.equals("Padding") ||
+               propertyName.equals("Margin") ||
+               propertyName.equals("Anchor") ||
+               propertyName.equals("Background") ||
+               propertyName.equals("ScrollbarStyle") ||
+               propertyName.equals("TextTooltipStyle") ||
+               propertyName.equals("Sounds") ||
+               propertyName.equals("DurabilityBarAnchor") ||
+               propertyName.equals("NumberFieldContainerAnchor") ||
+               propertyName.equals("ItemGridStyle") ||
+               propertyName.equals("Bar") ||
+               propertyName.equals("Handle");
+    }
+
+    /**
+     * Validate a sub-property inside a complex property value block
+     */
+    private void validateComplexPropertySubProperty(PsiElement element, AnnotationHolder holder,
+        String propertyName, String complexProperty) {
+        List<String> validSubProperties = getSubPropertiesForComplexProperty(complexProperty);
+
+        if (!validSubProperties.contains(propertyName)) {
+            String message = String.format("Unknown sub-property '%s' for '%s'", propertyName, complexProperty);
+            holder.newAnnotation(HighlightSeverity.WARNING, message)
+                .range(element.getTextRange())
+                .create();
+        }
+    }
+
+    /**
+     * Get valid sub-properties for a complex property
+     */
+    private List<String> getSubPropertiesForComplexProperty(String propertyName) {
+        return switch (propertyName) {
+            case "Padding", "Margin" -> List.of("Full", "Top", "Bottom", "Left", "Right", "Horizontal", "Vertical");
+            case "Anchor" -> List.of("Width", "Height", "Top", "Bottom", "Left", "Right",
+                "Full", "Horizontal", "Vertical", "MaxWidth", "MinWidth",
+                "MaxHeight", "MinHeight");
+            case "Background" -> List.of("TexturePath", "Color", "Border", "HorizontalBorder", "VerticalBorder");
+            case "ScrollbarStyle" -> List.of("Spacing", "Size", "OnlyVisibleWhenHovered");
+            case "TextTooltipStyle" -> List.of("MaxWidth", "LabelStyle");
+            case "Sounds" -> List.of("Volume", "MinPitch", "MaxPitch");
+            case "DurabilityBarAnchor", "NumberFieldContainerAnchor" ->
+                List.of("Width", "Height", "Top", "Bottom", "Left", "Right");
+            case "ItemGridStyle" -> List.of("SlotSize", "SlotIconSize", "SlotSpacing", "SlotBackground");
+            case "Bar", "Handle" -> List.of("Background", "Color", "Width", "Height");
+            default -> List.of();
+        };
+    }
+
+    /**
      * Find the parent component type by searching backwards through the text
      */
     private String findParentComponentType(PsiElement element) {
@@ -84,10 +198,8 @@ public class UIPropertyValidator implements Annotator {
             if (text.equals("}")) {
                 braceDepth++;
             } else if (text.equals("{")) {
-                braceDepth--;
-
-                // Found opening brace at our level, now look for the type name before it
-                if (braceDepth < 0) {
+                // Found opening brace at our level (depth 0 means we're at the same nesting level as the property)
+                if (braceDepth == 0) {
                     PsiElement prev = PsiTreeUtil.prevLeaf(current);
                     while (prev != null) {
                         String prevText = prev.getText().trim();
@@ -105,7 +217,10 @@ public class UIPropertyValidator implements Annotator {
                         }
                         prev = PsiTreeUtil.prevLeaf(prev);
                     }
+                    // If we didn't find a valid type, return null
+                    return null;
                 }
+                braceDepth--;
             }
 
             current = PsiTreeUtil.prevLeaf(current);
@@ -155,7 +270,8 @@ public class UIPropertyValidator implements Annotator {
                                 PsiElement beforeColon = PsiTreeUtil.prevLeaf(prev);
                                 while (beforeColon != null) {
                                     String beforeText = beforeColon.getText().trim();
-                                    if (!beforeText.isEmpty() && !beforeText.equals("\n") && !beforeText.equals("\r\n")) {
+                                    if (!beforeText.isEmpty() && !beforeText.equals("\n") && !beforeText.equals(
+                                        "\r\n")) {
                                         return beforeText.equals("Style");
                                     }
                                     beforeColon = PsiTreeUtil.prevLeaf(beforeColon);

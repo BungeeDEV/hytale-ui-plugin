@@ -79,6 +79,14 @@ public class UITypeDefinitions {
             new PropertyInfo("MaskTexturePath", "Path to mask texture for clipping/masking effects", "string")
         ));
         UI_TYPES.put("Group", groupProps);
+        UI_TYPES.put("Container", groupProps);
+        UI_TYPES.put("DecoratedContainer", groupProps);
+        UI_TYPES.put("SectionContainer", groupProps);
+        UI_TYPES.put("Row", groupProps);
+        UI_TYPES.put("RowHintContainer", groupProps);
+        UI_TYPES.put("RowLabelContainer", groupProps);
+        UI_TYPES.put("Content", groupProps);
+        UI_TYPES.put("Wrapper", groupProps);
 
         // Label component
         // Style block supports: FontSize, TextColor, RenderBold, RenderUppercase, RenderItalics,
@@ -94,75 +102,102 @@ public class UITypeDefinitions {
             new PropertyInfo("TooltipTextSpans", "Text spans for tooltip content", "text spans")
         ));
         UI_TYPES.put("Label", labelProps);
+        UI_TYPES.put("TitleLabel", labelProps);
+        UI_TYPES.put("CenteredTitleLabel", labelProps);
+        UI_TYPES.put("Title", labelProps);
+        UI_TYPES.put("PanelTitle", labelProps);
+        UI_TYPES.put("RowLabel", labelProps);
+        UI_TYPES.put("StatNameLabel", labelProps);
+        UI_TYPES.put("StatNameValueLabel", labelProps);
+        UI_TYPES.put("HotkeyLabel", labelProps);
+        UI_TYPES.put("LabelAffix", labelProps);
 
         // Button component
         List<PropertyInfo> buttonProps = new ArrayList<>(commonProps);
         buttonProps.addAll(Arrays.asList(
             new PropertyInfo("Text", "Text on the button", "string"),
-            new PropertyInfo("TextColor", "Color of the button text", "color"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("FlexWeight", "Flex weight for layout", "number"),
             new PropertyInfo("HoverBackground", "Background color on hover", "color"),
             new PropertyInfo("PressedBackground", "Background color when pressed", "color"),
             new PropertyInfo("DisabledBackground", "Background color when disabled", "color"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
+            new PropertyInfo("Sounds", "Button sound effects", "sound config"),
             new PropertyInfo("OnClick", "Click event handler", "event handler")
         ));
         UI_TYPES.put("Button", buttonProps);
+        UI_TYPES.put("ActionButton", buttonProps);
+        UI_TYPES.put("BackButton", buttonProps);
+        UI_TYPES.put("ColumnButton", buttonProps);
+        UI_TYPES.put("PrimaryButton", buttonProps);
+        UI_TYPES.put("SecondaryButton", buttonProps);
+        UI_TYPES.put("ToggleButton", buttonProps);
+        UI_TYPES.put("ToolButton", buttonProps);
+        UI_TYPES.put("TabButton", buttonProps);
 
-        // TextButton component - similar to Button but without LayoutMode
+        // TextButton component
         List<PropertyInfo> textButtonProps = new ArrayList<>(commonProps);
         textButtonProps.addAll(Arrays.asList(
             new PropertyInfo("Text", "Text on the button", "string"),
-            new PropertyInfo("TextColor", "Color of the button text", "color"),
-            new PropertyInfo("HoverBackground", "Background color on hover", "color"),
-            new PropertyInfo("PressedBackground", "Background color when pressed", "color"),
-            new PropertyInfo("DisabledBackground", "Background color when disabled", "color"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("FlexWeight", "Flex weight for layout", "number"),
+            new PropertyInfo("Sounds", "Button sound effects", "sound config"),
             new PropertyInfo("OnClick", "Click event handler", "event handler")
         ));
         UI_TYPES.put("TextButton", textButtonProps);
+        UI_TYPES.put("PrimaryTextButton", textButtonProps);
+        UI_TYPES.put("SecondaryTextButton", textButtonProps);
+        UI_TYPES.put("TertiaryTextButton", textButtonProps);
+        UI_TYPES.put("DestructiveTextButton", textButtonProps);
+        UI_TYPES.put("SmallSecondaryTextButton", textButtonProps);
+        UI_TYPES.put("TagTextButton", textButtonProps);
 
         // TextField / TextInput component
         List<PropertyInfo> textFieldProps = new ArrayList<>(commonProps);
         textFieldProps.addAll(Arrays.asList(
             new PropertyInfo("Text", "Default text value", "string"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
             new PropertyInfo("PlaceholderText", "Placeholder text", "string"),
-            new PropertyInfo("TextColor", "Color of the text", "color"),
-            new PropertyInfo("PlaceholderColor", "Color of placeholder text", "color"),
+            new PropertyInfo("PlaceholderStyle", "Style for placeholder text", "style reference"),
             new PropertyInfo("MaxLength", "Maximum text length", "number"),
+            new PropertyInfo("MaxVisibleLines", "Maximum visible lines", "number"),
             new PropertyInfo("ReadOnly", "Whether the field is read-only", "boolean"),
             new PropertyInfo("Password", "Password input mode", "boolean"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
+            new PropertyInfo("PasswordChar", "Character to display for password", "string"),
+            new PropertyInfo("AutoGrow", "Automatically grow height with content", "boolean"),
             new PropertyInfo("OnChange", "Change event handler", "event handler")
         ));
         UI_TYPES.put("TextField", textFieldProps);
-        UI_TYPES.put("TextInput", textFieldProps);
+        UI_TYPES.put("CompactTextField", textFieldProps);
+        UI_TYPES.put("MultilineTextField", textFieldProps);
 
         // Image component
-        List<PropertyInfo> imageProps = new ArrayList<>(commonProps);
+        List<PropertyInfo> imageProps = new ArrayList<>(commonPropsNoStyle);
         imageProps.addAll(Arrays.asList(
-            new PropertyInfo("Source", "Image source path", "string"),
-            new PropertyInfo("Stretch", "Image stretch mode", "stretch value"),
-            new PropertyInfo("AspectRatio", "Maintain aspect ratio", "boolean"),
-            new PropertyInfo("Tint", "Image tint color", "color")
+            new PropertyInfo("TexturePath", "Image source path", "string"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("MaskTexturePath", "Mask texture path", "string"),
+            new PropertyInfo("Color", "Image tint color", "color"),
+            new PropertyInfo("Frame", "Frame index for sprite sheets", "number"),
+            new PropertyInfo("FramesPerSecond", "Animation speed for sprites", "number")
         ));
         UI_TYPES.put("Image", imageProps);
+        UI_TYPES.put("BackgroundImage", imageProps);
+        UI_TYPES.put("AssetImage", imageProps);
+        UI_TYPES.put("Icon", imageProps);
+        UI_TYPES.put("Sprite", imageProps);
 
         // CheckBox component
         List<PropertyInfo> checkBoxProps = new ArrayList<>(commonProps);
         checkBoxProps.addAll(Arrays.asList(
             new PropertyInfo("Text", "Label text", "string"),
             new PropertyInfo("Checked", "Whether checked by default", "boolean"),
-            new PropertyInfo("TextColor", "Color of the text", "color"),
-            new PropertyInfo("CheckColor", "Color of the check mark", "color"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("CheckedStyle", "Style when checked", "style reference"),
+            new PropertyInfo("UncheckedStyle", "Style when unchecked", "style reference"),
             new PropertyInfo("OnChange", "Change event handler", "event handler")
         ));
         UI_TYPES.put("CheckBox", checkBoxProps);
+        UI_TYPES.put("LabeledCheckBox", checkBoxProps);
 
         // Slider component
         List<PropertyInfo> sliderProps = new ArrayList<>(commonProps);
@@ -171,175 +206,188 @@ public class UITypeDefinitions {
             new PropertyInfo("MinValue", "Minimum value", "number"),
             new PropertyInfo("MaxValue", "Maximum value", "number"),
             new PropertyInfo("Step", "Step increment", "number"),
-            new PropertyInfo("TrackColor", "Color of the track", "color"),
-            new PropertyInfo("ThumbColor", "Color of the thumb", "color"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("SliderStyle", "Custom slider styling", "style reference"),
             new PropertyInfo("OnChange", "Change event handler", "event handler")
         ));
         UI_TYPES.put("Slider", sliderProps);
-
-        // Panel component
-        List<PropertyInfo> panelProps = new ArrayList<>(commonProps);
-        panelProps.addAll(Arrays.asList(
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("ScrollEnabled", "Enable scrolling", "boolean")
-        ));
-        UI_TYPES.put("Panel", panelProps);
-
-        // ScrollView component
-        List<PropertyInfo> scrollViewProps = new ArrayList<>(commonProps);
-        scrollViewProps.addAll(Arrays.asList(
-            new PropertyInfo("ScrollbarVisible", "Show scrollbar", "boolean"),
-            new PropertyInfo("ScrollbarColor", "Scrollbar color", "color"),
-            new PropertyInfo("HorizontalScroll", "Enable horizontal scroll", "boolean"),
-            new PropertyInfo("VerticalScroll", "Enable vertical scroll", "boolean")
-        ));
-        UI_TYPES.put("ScrollView", scrollViewProps);
-
-        // Input component (similar to TextField)
-        List<PropertyInfo> inputProps = new ArrayList<>(commonProps);
-        inputProps.addAll(Arrays.asList(
-            new PropertyInfo("Text", "Default text value", "string"),
-            new PropertyInfo("PlaceholderText", "Placeholder text", "string"),
-            new PropertyInfo("TextColor", "Color of the text", "color"),
-            new PropertyInfo("PlaceholderColor", "Color of placeholder text", "color"),
-            new PropertyInfo("MaxLength", "Maximum text length", "number"),
-            new PropertyInfo("ReadOnly", "Whether the field is read-only", "boolean"),
-            new PropertyInfo("Password", "Password input mode", "boolean"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("OnChange", "Change event handler", "event handler")
-        ));
-        UI_TYPES.put("Input", inputProps);
-
-        // Container component (similar to Panel but can have layout)
-        List<PropertyInfo> containerProps = new ArrayList<>(commonProps);
-        containerProps.addAll(Arrays.asList(
-            new PropertyInfo("LayoutMode", "Layout mode for children", "layout value"),
-            new PropertyInfo("Spacing", "Spacing between children", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("ScrollEnabled", "Enable scrolling", "boolean")
-        ));
-        UI_TYPES.put("Container", containerProps);
-
-        // ItemIcon component
-        List<PropertyInfo> itemIconProps = new ArrayList<>(commonProps);
-        itemIconProps.addAll(Arrays.asList(
-            new PropertyInfo("ItemId", "Item identifier", "string"),
-            new PropertyInfo("IconSize", "Size of the icon", "number"),
-            new PropertyInfo("Tint", "Icon tint color", "color")
-        ));
-        UI_TYPES.put("ItemIcon", itemIconProps);
-
-        // ItemSlot component
-        List<PropertyInfo> itemSlotProps = new ArrayList<>(commonProps);
-        itemSlotProps.addAll(Arrays.asList(
-            new PropertyInfo("ItemId", "Item identifier", "string"),
-            new PropertyInfo("SlotSize", "Size of the slot", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("HighlightColor", "Highlight color", "color"),
-            new PropertyInfo("OnClick", "Click event handler", "event handler")
-        ));
-        UI_TYPES.put("ItemSlot", itemSlotProps);
-
-        // ItemSlotButton component
-        List<PropertyInfo> itemSlotButtonProps = new ArrayList<>(commonProps);
-        itemSlotButtonProps.addAll(Arrays.asList(
-            new PropertyInfo("ItemId", "Item identifier", "string"),
-            new PropertyInfo("SlotSize", "Size of the slot", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("HoverBackground", "Background color on hover", "color"),
-            new PropertyInfo("PressedBackground", "Background color when pressed", "color"),
-            new PropertyInfo("OnClick", "Click event handler", "event handler")
-        ));
-        UI_TYPES.put("ItemSlotButton", itemSlotButtonProps);
-
-        // ItemGrid component (container for items with layout)
-        List<PropertyInfo> itemGridProps = new ArrayList<>(commonProps);
-        itemGridProps.addAll(Arrays.asList(
-            new PropertyInfo("Columns", "Number of columns", "number"),
-            new PropertyInfo("Rows", "Number of rows", "number"),
-            new PropertyInfo("Spacing", "Spacing between items", "number"),
-            new PropertyInfo("CellSize", "Size of each cell", "number")
-        ));
-        UI_TYPES.put("ItemGrid", itemGridProps);
-
-        // FloatSlider component
-        List<PropertyInfo> floatSliderProps = new ArrayList<>(commonProps);
-        floatSliderProps.addAll(Arrays.asList(
-            new PropertyInfo("Value", "Current value", "number"),
-            new PropertyInfo("MinValue", "Minimum value", "number"),
-            new PropertyInfo("MaxValue", "Maximum value", "number"),
-            new PropertyInfo("Step", "Step increment", "number"),
-            new PropertyInfo("Precision", "Decimal precision", "number"),
-            new PropertyInfo("TrackColor", "Color of the track", "color"),
-            new PropertyInfo("ThumbColor", "Color of the thumb", "color"),
-            new PropertyInfo("OnChange", "Change event handler", "event handler")
-        ));
-        UI_TYPES.put("FloatSlider", floatSliderProps);
-
-        // DropdownBox component
-        List<PropertyInfo> dropdownProps = new ArrayList<>(commonProps);
-        dropdownProps.addAll(Arrays.asList(
-            new PropertyInfo("Items", "List of items", "array"),
-            new PropertyInfo("SelectedIndex", "Selected item index", "number"),
-            new PropertyInfo("PlaceholderText", "Placeholder text", "string"),
-            new PropertyInfo("TextColor", "Color of the text", "color"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("DropdownBackground", "Background of dropdown menu", "color"),
-            new PropertyInfo("OnChange", "Change event handler", "event handler")
-        ));
-        UI_TYPES.put("DropdownBox", dropdownProps);
+        UI_TYPES.put("FloatSlider", sliderProps);
 
         // NumberField component
         List<PropertyInfo> numberFieldProps = new ArrayList<>(commonProps);
         numberFieldProps.addAll(Arrays.asList(
             new PropertyInfo("Value", "Default number value", "number"),
-            new PropertyInfo("PlaceholderText", "Placeholder text", "string"),
-            new PropertyInfo("TextColor", "Color of the text", "color"),
-            new PropertyInfo("PlaceholderColor", "Color of placeholder text", "color"),
             new PropertyInfo("MinValue", "Minimum value", "number"),
             new PropertyInfo("MaxValue", "Maximum value", "number"),
             new PropertyInfo("Step", "Step increment", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("Format", "Number format string", "string"),
+            new PropertyInfo("MaxDecimalPlaces", "Maximum decimal places", "number"),
+            new PropertyInfo("NumberFieldStyle", "Style for number field", "style reference"),
             new PropertyInfo("OnChange", "Change event handler", "event handler")
         ));
         UI_TYPES.put("NumberField", numberFieldProps);
+        UI_TYPES.put("SliderNumberField", numberFieldProps);
+        UI_TYPES.put("FloatSliderNumberField", numberFieldProps);
 
-        // DecoratedContainer component (container with layout support)
-        List<PropertyInfo> decoratedContainerProps = new ArrayList<>(commonProps);
-        decoratedContainerProps.addAll(Arrays.asList(
+        // Panel component
+        List<PropertyInfo> panelProps = new ArrayList<>(commonProps);
+        panelProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
             new PropertyInfo("LayoutMode", "Layout mode for children", "layout value"),
             new PropertyInfo("Spacing", "Spacing between children", "number"),
-            new PropertyInfo("BorderColor", "Border color", "color"),
-            new PropertyInfo("BorderWidth", "Border width", "number"),
-            new PropertyInfo("BorderRadius", "Border radius", "number"),
-            new PropertyInfo("ScrollEnabled", "Enable scrolling", "boolean"),
-            new PropertyInfo("ShadowColor", "Shadow color", "color"),
-            new PropertyInfo("ShadowOffset", "Shadow offset", "number")
+            new PropertyInfo("ScrollbarStyle", "Scrollbar styling", "style reference"),
+            new PropertyInfo("ScrollEnabled", "Enable scrolling", "boolean")
         ));
-        UI_TYPES.put("DecoratedContainer", decoratedContainerProps);
+        UI_TYPES.put("Panel", panelProps);
 
-        // PageOverlay component (full screen overlay with layout)
-        List<PropertyInfo> pageOverlayProps = new ArrayList<>(commonProps);
-        pageOverlayProps.addAll(Arrays.asList(
+        // ItemIcon component
+        List<PropertyInfo> itemIconProps = new ArrayList<>(commonPropsNoStyle);
+        itemIconProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("IconWidth", "Width of the icon", "number"),
+            new PropertyInfo("IconHeight", "Height of the icon", "number"),
+            new PropertyInfo("IconTexturePath", "Path to icon texture", "string")
+        ));
+        UI_TYPES.put("ItemIcon", itemIconProps);
+
+        // ItemSlot & ItemSlotButton component
+        List<PropertyInfo> itemSlotProps = new ArrayList<>(commonPropsNoStyle);
+        itemSlotProps.addAll(Arrays.asList(
+            new PropertyInfo("SlotSize", "Size of the slot", "number"),
+            new PropertyInfo("SlotIconSize", "Size of the icon within slot", "number"),
+            new PropertyInfo("SlotBackground", "Background texture/color", "color"),
+            new PropertyInfo("SlotHoverOverlay", "Overlay when hovering", "texture"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("DurabilityBar", "Show durability bar", "boolean"),
+            new PropertyInfo("DurabilityBarAnchor", "Anchor for durability bar", "anchor value"),
+            new PropertyInfo("OnClick", "Click event handler", "event handler")
+        ));
+        UI_TYPES.put("ItemSlot", itemSlotProps);
+        UI_TYPES.put("ItemSlotButton", itemSlotProps);
+
+        // ItemGrid component
+        List<PropertyInfo> itemGridProps = new ArrayList<>(commonPropsNoStyle);
+        itemGridProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("SlotsPerRow", "Number of slots per row", "number"),
+            new PropertyInfo("Capacity", "Total capacity", "number"),
+            new PropertyInfo("SlotSize", "Size of each slot", "number"),
+            new PropertyInfo("SlotIconSize", "Size of icons in slots", "number"),
+            new PropertyInfo("SlotSpacing", "Spacing between slots", "number"),
+            new PropertyInfo("SlotBackground", "Background for slots", "color"),
+            new PropertyInfo("ItemGridStyle", "Custom item grid styling", "style reference"),
+            new PropertyInfo("RenderItemQualityBackground", "Render quality backgrounds", "boolean"),
+            new PropertyInfo("ItemScale", "Scale factor for items", "number"),
+            new PropertyInfo("AreItemsDraggable", "Allow item dragging", "boolean")
+        ));
+        UI_TYPES.put("ItemGrid", itemGridProps);
+
+        // DropdownBox component
+        List<PropertyInfo> dropdownProps = new ArrayList<>(commonProps);
+        dropdownProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("AllowUnselection", "Allow deselecting items", "boolean"),
+            new PropertyInfo("MaxSelection", "Maximum number of selections", "number"),
+            new PropertyInfo("EntryHeight", "Height of each entry", "number"),
+            new PropertyInfo("EntryLabelStyle", "Style for entry labels", "style reference"),
+            new PropertyInfo("SelectedEntryLabelStyle", "Style for selected entries", "style reference"),
+            new PropertyInfo("PopupStyle", "Style for popup menu", "style reference"),
+            new PropertyInfo("OnChange", "Change event handler", "event handler")
+        ));
+        UI_TYPES.put("DropdownBox", dropdownProps);
+        UI_TYPES.put("ColorPickerDropdownBoxStyle", dropdownProps);
+        UI_TYPES.put("FileDropdownBoxStyle", dropdownProps);
+
+        // ProgressBar component
+        List<PropertyInfo> progressBarProps = new ArrayList<>(commonPropsNoStyle);
+        progressBarProps.addAll(Arrays.asList(
+            new PropertyInfo("Value", "Current progress value (0-1)", "number"),
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("Bar", "Bar configuration", "style config"),
+            new PropertyInfo("BarTexturePath", "Texture for progress bar", "string"),
+            new PropertyInfo("Background", "Background configuration", "color")
+        ));
+        UI_TYPES.put("ProgressBar", progressBarProps);
+        UI_TYPES.put("CircularProgressBar", progressBarProps);
+
+        // Separator components
+        List<PropertyInfo> separatorProps = new ArrayList<>(commonPropsNoStyle);
+        separatorProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("Color", "Separator color", "color")
+        ));
+        UI_TYPES.put("Separator", separatorProps);
+        UI_TYPES.put("Sep", separatorProps);
+        UI_TYPES.put("VerticalSeparator", separatorProps);
+        UI_TYPES.put("Divider", separatorProps);
+        UI_TYPES.put("ContentSeparator", separatorProps);
+        UI_TYPES.put("PanelSeparatorFancy", separatorProps);
+        UI_TYPES.put("ActionButtonSeparator", separatorProps);
+        UI_TYPES.put("VerticalActionButtonSeparator", separatorProps);
+
+        // Tab Navigation component
+        List<PropertyInfo> tabNavProps = new ArrayList<>(commonPropsNoStyle);
+        tabNavProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("SelectedTab", "Index of selected tab", "number"),
+            new PropertyInfo("TabStyle", "Style for tabs", "style reference"),
+            new PropertyInfo("SelectedTabStyle", "Style for selected tab", "style reference"),
+            new PropertyInfo("TabNavigationStyle", "Overall navigation styling", "style reference"),
+            new PropertyInfo("TabSounds", "Sound effects for tabs", "sound config")
+        ));
+        UI_TYPES.put("TabNavigation", tabNavProps);
+        UI_TYPES.put("Tab", tabNavProps);
+
+        // BlockSelector component
+        List<PropertyInfo> blockSelectorProps = new ArrayList<>(commonPropsNoStyle);
+        blockSelectorProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("BlockSelectorStyle", "Custom block selector styling", "style reference")
+        ));
+        UI_TYPES.put("BlockSelector", blockSelectorProps);
+
+        // Overlay components
+        List<PropertyInfo> overlayProps = new ArrayList<>(commonPropsNoStyle);
+        overlayProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
             new PropertyInfo("LayoutMode", "Layout mode for children", "layout value"),
             new PropertyInfo("Spacing", "Spacing between children", "number"),
             new PropertyInfo("CloseOnClickOutside", "Close when clicking outside", "boolean"),
-            new PropertyInfo("OverlayColor", "Background overlay color", "color"),
+            new PropertyInfo("Background", "Overlay background color", "color"),
             new PropertyInfo("OnClose", "Close event handler", "event handler")
         ));
-        UI_TYPES.put("PageOverlay", pageOverlayProps);
+        UI_TYPES.put("Overlay", overlayProps);
+        UI_TYPES.put("PageOverlay", overlayProps);
+        UI_TYPES.put("OfflineOverlay", overlayProps);
+        UI_TYPES.put("SceneBlur", overlayProps);
+
+        // Preview components
+        List<PropertyInfo> previewProps = new ArrayList<>(commonPropsNoStyle);
+        previewProps.addAll(Arrays.asList(
+            new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"),
+            new PropertyInfo("Scale", "Scale factor", "number")
+        ));
+        UI_TYPES.put("CharacterPreviewComponent", previewProps);
+        UI_TYPES.put("PlayerPreviewComponent", previewProps);
+        UI_TYPES.put("ItemPreviewComponent", previewProps);
+
+        // Specialized components with basic properties
+        List<PropertyInfo> specializedProps = new ArrayList<>(commonPropsNoStyle);
+        specializedProps.add(new PropertyInfo("Anchor", "Anchor point and dimensions", "anchor value"));
+
+        UI_TYPES.put("ActionButtonContainer", specializedProps);
+        UI_TYPES.put("HeaderSearch", specializedProps);
+        UI_TYPES.put("HotkeyRow", specializedProps);
+        UI_TYPES.put("DoubleArrowKeyHotkeyRow", specializedProps);
+        UI_TYPES.put("EditionCard", specializedProps);
+        UI_TYPES.put("ReorderableListGrip", specializedProps);
+        UI_TYPES.put("DefaultSpinner", specializedProps);
+        UI_TYPES.put("MenuItem", specializedProps);
+        UI_TYPES.put("Legend", specializedProps);
+        UI_TYPES.put("Pages", specializedProps);
+        UI_TYPES.put("Page", specializedProps);
+        UI_TYPES.put("TabSeparator", specializedProps);
     }
 
     /**

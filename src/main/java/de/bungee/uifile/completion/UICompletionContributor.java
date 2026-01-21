@@ -30,6 +30,14 @@ public class UICompletionContributor extends CompletionContributor {
                     @NotNull CompletionResultSet result) {
                     PsiElement position = parameters.getPosition();
 
+                    // Check if we're inside a complex property value block (e.g., Padding: (Full: 20))
+                    String complexPropertyContext = findComplexPropertyContext(position);
+                    if (complexPropertyContext != null) {
+                        // We're inside a complex property value - suggest sub-properties
+                        addComplexPropertyCompletions(result, complexPropertyContext);
+                        return;
+                    }
+
                     // Check if we're trying to complete a property value
                     String propertyName = findPropertyNameBeforeColon(position);
                     if (propertyName != null) {
@@ -62,6 +70,111 @@ public class UICompletionContributor extends CompletionContributor {
                 }
             }
         );
+    }
+
+    /**
+     * Find if we're inside a complex property value block (e.g., Padding: (Full: 20))
+     * Returns the property name (e.g., "Padding") if inside such a block
+     */
+    private String findComplexPropertyContext(PsiElement element) {
+        PsiElement current = element;
+        int parenDepth = 0;
+
+        // Search backwards for matching parentheses
+        while (current != null) {
+            String text = current.getText().trim();
+
+            if (text.equals(")")) {
+                parenDepth++;
+            } else if (text.equals("(")) {
+                parenDepth--;
+                if (parenDepth < 0) {
+                    // Found the opening parenthesis, now look for the property name before it
+                    PsiElement prev = PsiTreeUtil.prevLeaf(current);
+                    while (prev != null) {
+                        String prevText = prev.getText().trim();
+                        if (prevText.equals(":")) {
+                            // Found colon, check for property name before it
+                            PsiElement beforeColon = PsiTreeUtil.prevLeaf(prev);
+                            while (beforeColon != null) {
+                                String beforeColonText = beforeColon.getText().trim();
+                                if (!beforeColonText.isEmpty() && !beforeColonText.equals("\n") && !beforeColonText.equals("\r\n")) {
+                                    // Check if this is a complex property (Padding, Margin, Anchor, etc.)
+                                    if (isComplexProperty(beforeColonText)) {
+                                        return beforeColonText;
+                                    }
+                                    break;
+                                }
+                                beforeColon = PsiTreeUtil.prevLeaf(beforeColon);
+                            }
+                            break;
+                        } else if (!prevText.isEmpty() && !prevText.equals("\n") && !prevText.equals("\r\n")) {
+                            break;
+                        }
+                        prev = PsiTreeUtil.prevLeaf(prev);
+                    }
+                    break;
+                }
+            }
+
+            current = PsiTreeUtil.prevLeaf(current);
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if a property name represents a complex property with sub-properties
+     */
+    private boolean isComplexProperty(String propertyName) {
+        return propertyName.equals("Padding") ||
+               propertyName.equals("Margin") ||
+               propertyName.equals("Anchor") ||
+               propertyName.equals("Background") ||
+               propertyName.equals("ScrollbarStyle") ||
+               propertyName.equals("TextTooltipStyle") ||
+               propertyName.equals("Sounds") ||
+               propertyName.equals("DurabilityBarAnchor") ||
+               propertyName.equals("NumberFieldContainerAnchor");
+    }
+
+    /**
+     * Add completions for sub-properties inside complex property blocks
+     */
+    private void addComplexPropertyCompletions(@NotNull CompletionResultSet result, String propertyName) {
+        List<String> subProperties = getSubPropertiesForComplexProperty(propertyName);
+
+        for (String subProp : subProperties) {
+            result.addElement(
+                LookupElementBuilder.create(subProp)
+                    .withTypeText(propertyName + " sub-property")
+                    .withInsertHandler((insertContext, item) -> {
+                        // Add colon and space after the sub-property
+                        int offset = insertContext.getEditor().getCaretModel().getOffset();
+                        insertContext.getDocument().insertString(offset, ": ");
+                        insertContext.getEditor().getCaretModel().moveToOffset(offset + 2);
+                    })
+            );
+        }
+    }
+
+    /**
+     * Get sub-properties for a complex property
+     */
+    private List<String> getSubPropertiesForComplexProperty(String propertyName) {
+        return switch (propertyName) {
+            case "Padding", "Margin" -> List.of("Full", "Top", "Bottom", "Left", "Right", "Horizontal", "Vertical");
+            case "Anchor" -> List.of("Width", "Height", "Top", "Bottom", "Left", "Right",
+                                     "Full", "Horizontal", "Vertical", "MaxWidth", "MinWidth",
+                                     "MaxHeight", "MinHeight");
+            case "Background" -> List.of("TexturePath", "Color", "Border", "HorizontalBorder", "VerticalBorder");
+            case "ScrollbarStyle" -> List.of("Spacing", "Size", "OnlyVisibleWhenHovered");
+            case "TextTooltipStyle" -> List.of("MaxWidth", "LabelStyle");
+            case "Sounds" -> List.of("Volume", "MinPitch", "MaxPitch");
+            case "DurabilityBarAnchor", "NumberFieldContainerAnchor" ->
+                List.of("Width", "Height", "Top", "Bottom", "Left", "Right");
+            default -> List.of();
+        };
     }
 
     /**
@@ -210,8 +323,8 @@ public class UICompletionContributor extends CompletionContributor {
     }
 
     /**
-     * Check if we're inside a Style block by looking for "Style:(" pattern
-     * Returns "Style" if inside a style block, null otherwise
+     * Check if we're inside a Style block by looking for "Style:(" pattern Returns "Style" if inside a style block,
+     * null otherwise
      */
     private String findStyleBlockContext(PsiElement element) {
         PsiElement current = element;
@@ -264,10 +377,13 @@ public class UICompletionContributor extends CompletionContributor {
      */
     private void addTypeCompletions(@NotNull CompletionResultSet result) {
         for (String type : UITypeDefinitions.getUITypes()) {
+            // Bestimme die Kategorie für bessere Organisation
+            String category = categorizeComponent(type);
+
             result.addElement(
                 LookupElementBuilder.create(type + " {\n    \n}")
                     .withPresentableText(type)
-                    .withTypeText("UI Component")
+                    .withTypeText(category)
                     .withInsertHandler((insertContext, item) -> {
                         // Move the cursor inside the braces
                         int offset = insertContext.getEditor().getCaretModel().getOffset();
@@ -276,6 +392,66 @@ public class UICompletionContributor extends CompletionContributor {
                     .bold()
             );
         }
+    }
+
+    /**
+     * Kategorisiere UI-Components für bessere Übersichtlichkeit
+     */
+    private String categorizeComponent(String type) {
+        // Layout Components
+        if (type.contains("Group") || type.contains("Container") || type.equals("Panel") ||
+            type.equals("Row") || type.equals("Content") || type.equals("Wrapper")) {
+            return "Layout";
+        }
+        // Button Components
+        if (type.contains("Button")) {
+            return "Button";
+        }
+        // Text/Label Components
+        if (type.contains("Label") || type.contains("Title")) {
+            return "Text";
+        }
+        // Input Components
+        if (type.contains("TextField") || type.contains("Field") || type.contains("Input")) {
+            return "Input";
+        }
+        // Item/Inventory Components
+        if (type.contains("Item") || type.contains("Slot") || type.contains("Grid")) {
+            return "Inventory";
+        }
+        // Image Components
+        if (type.contains("Image") || type.equals("Icon") || type.equals("Sprite")) {
+            return "Image";
+        }
+        // Slider Components
+        if (type.contains("Slider") || type.contains("Progress")) {
+            return "Control";
+        }
+        // Selection Components
+        if (type.contains("CheckBox") || type.contains("Dropdown") || type.contains("Selector")) {
+            return "Selection";
+        }
+        // Tab/Navigation Components
+        if (type.contains("Tab") || type.contains("Navigation") || type.contains("Page") || type.contains("Menu")) {
+            return "Navigation";
+        }
+        // Separators
+        if (type.contains("Separator") || type.equals("Divider") || type.equals("Sep")) {
+            return "Layout";
+        }
+        // Overlays
+        if (type.contains("Overlay") || type.contains("Popup")) {
+            return "Overlay";
+        }
+        // Preview Components
+        if (type.contains("Preview")) {
+            return "Preview";
+        }
+        // Style Components
+        if (type.contains("Style")) {
+            return "Style";
+        }
+        return "UI Component";
     }
 
     /**
@@ -359,7 +535,6 @@ public class UICompletionContributor extends CompletionContributor {
         return switch (prop.valueType()) {
             case "color" -> prop.name() + ":#";
             case "string" -> prop.name() + ":\"\"";
-            case "number" -> prop.name() + ":";
             case "boolean" -> prop.name() + ":true";
             case "alignment" -> prop.name() + ":Center";
             default -> prop.name() + ":";
