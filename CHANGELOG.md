@@ -8,6 +8,38 @@ on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-01-21
+
+### Added
+
+- **Component Selection and Navigation**: Interactive component selection in UI preview
+    - Click on components in the preview to select them
+    - Visual highlighting of selected components
+    - Navigate between components in the preview panel
+- **Semicolon Validation and Quick Fixes**: Automatic validation for UI syntax
+    - Detection of missing or unnecessary semicolons
+    - Quick fix actions via Alt+Enter
+    - Add missing semicolons automatically
+    - Remove unnecessary semicolons with one click
+- **Enhanced Property Completion**: Advanced auto-completion for UI properties
+    - Support for complex property types and nested structures
+    - Improved property categorization (Layout, Appearance, Behavior, etc.)
+    - Context-aware suggestions based on component type
+    - Smart value templates for different property types
+
+### Improved
+
+- **UI Component Rendering**: Enhanced preview panel rendering
+    - Debouncing for better performance during typing
+    - Improved layout handling for complex component hierarchies
+    - Better bounds calculation and positioning
+    - Smoother real-time updates
+- **Validation System**: Comprehensive validation for UI files
+    - Component type validation with error highlighting
+    - Property name validation per component type
+    - Real-time feedback for syntax errors
+    - Helpful error messages and quick fixes
+
 ## [1.2.4] - 2026-01-19
 
 ### Fixed

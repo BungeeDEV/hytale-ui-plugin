@@ -9,6 +9,8 @@
 An IntelliJ IDEA plugin that provides support for `.ui`
 files - a format for defining user interfaces.
 
+![UI File Plugin Screenshot](images/screenshot1.png)
+
 ## Features
 
 ✅ **Live Preview** - Real-time visual rendering of .ui files
@@ -17,6 +19,8 @@ in a tool window
 components, properties, strings, and comments  
 ✅ **IntelliSense/Code Completion** - Auto-completion for UI
 component types and their properties with descriptions  
+✅ **Semicolon Validation** - Smart validation and auto-fix
+for semicolon rules (see [Semicolon Rules](SEMICOLON_QUICKREF.md))  
 ✅ **Color Preview** - Visual color squares in the gutter for
 hex color values  
 ✅ **Bracket Matching** - Automatic matching of `{}` and
@@ -194,4 +198,3 @@ MIT License
 
 Pull requests are welcome! For major changes, please open an
 issue first to discuss what you would like to change.
-

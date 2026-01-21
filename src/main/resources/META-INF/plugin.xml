@@ -1,7 +1,7 @@
 ﻿<idea-plugin>
   <id>de.bungee.idea.plugins.uifile</id>
   <name>Hytale .ui Support</name>
-  <version>1.2.3</version>
+  <version>1.3.0</version>
   <vendor email="contact@lyndara.net"
     url="https://github.com/BungeeDEV/hytale-ui-plugin">
     BungeeDEV
@@ -17,12 +17,41 @@
       <li>Recognition and highlighting of properties (Anchor, Background, Text, Style, etc.)</li>
       <li>Color preview for hex color values with inline color squares</li>
       <li><b>Interactive color picker</b> - Click color gutter icons or use Alt+Enter to change colors visually</li>
+      <li><b>IntelliSense/Code Completion</b> - Smart auto-completion for components, properties, and values</li>
+      <li><b>Live Preview</b> - Real-time visual rendering of .ui files with zoom controls</li>
+      <li><b>Code Reformatting</b> - Full support for Ctrl+Alt+L to format .ui files</li>
+      <li><b>Quick Actions</b> - Create new .ui files from context menu</li>
       <li>Brace matching for {} and () blocks</li>
       <li>Code folding for nested {} blocks</li>
       <li>File type registration for .ui extension</li>
     </ul>
     ]]></description>
   <change-notes><![CDATA[
+    <h3>Version 1.3.0</h3>
+    <ul>
+      <li><b>NEW: Component Selection and Navigation</b> - Interactive component selection in preview panel</li>
+      <li>Click on components to select and highlight them in the preview</li>
+      <li>Navigate between components visually</li>
+      <li><b>NEW: Semicolon Validation</b> - Automatic syntax validation with quick fixes</li>
+      <li>Detection of missing or unnecessary semicolons</li>
+      <li>Quick fix actions via Alt+Enter to add/remove semicolons</li>
+      <li><b>IMPROVED: Property Completion</b> - Enhanced auto-completion system</li>
+      <li>Support for complex property types and nested structures</li>
+      <li>Improved property categorization (Layout, Appearance, Behavior)</li>
+      <li>Context-aware suggestions with smart value templates</li>
+      <li><b>IMPROVED: Component Rendering</b> - Better preview performance and accuracy</li>
+      <li>Debouncing for smoother typing experience</li>
+      <li>Improved layout handling for complex hierarchies</li>
+      <li>Better bounds calculation and positioning</li>
+      <li><b>IMPROVED: Validation System</b> - Comprehensive error detection</li>
+      <li>Component type validation with error highlighting</li>
+      <li>Property name validation per component type</li>
+      <li>Real-time feedback with helpful error messages</li>
+    </ul>
+    <h3>Version 1.2.4</h3>
+    <ul>
+      <li>Fixed AutoCompletion contributor registration formatting</li>
+    </ul>
     <h3>Version 1.2.3</h3>
     <ul>
       <li><b>FIXED: Preview Rendering</b> - Improved UI preview panel rendering stability</li>
@@ -140,6 +169,10 @@
     <annotator
       language="UI"
       implementationClass="de.bungee.uifile.highlighter.UIComponentTypeValidator"/>
+    <!-- Semicolon Validator Annotator -->
+    <annotator
+      language="UI"
+      implementationClass="de.bungee.uifile.highlighter.UISemicolonValidator"/>
     <!-- Color Picker Intention -->
     <intentionAction>
       <language>UI</language>

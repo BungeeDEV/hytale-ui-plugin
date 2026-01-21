@@ -4,21 +4,40 @@
     id("org.jetbrains.intellij.platform") version "2.10.5"
 }
 
-val pluginVersion = "1.2.4"
+val pluginVersion = "1.3.0"
 
 group = "de.bungee.idea.plugins.uifile"
 version = pluginVersion
-// Configure Java compatibility for JDK 17 (required by IntelliJ Platform 2025.1+)
+// Configure Java compatibility for JDK 21 (required by IntelliJ Platform 2025.1+)
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
+
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
+
+// Optimize Java compilation
+tasks.withType<JavaCompile> {
+    options.apply {
+        encoding = "UTF-8"
+        // Enable all compiler optimizations
+        compilerArgs.addAll(
+            listOf(
+                "-Xlint:all",
+                "-Xlint:-serial",
+                "-parameters"
+            )
+        )
+        // Enable incremental compilation
+        isIncremental = true
+    }
+}
+
 repositories {
     mavenCentral()
     intellijPlatform {
