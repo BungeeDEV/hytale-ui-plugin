@@ -66,6 +66,26 @@ public class UIModelParser {
     private long parseStartTime = 0;
     private final Set<Integer> visitedPositions = new HashSet<>();
 
+    private int[] getLineAndColumn(int position) {
+        if (content == null || position < 0 || position >= content.length()) {
+            return new int[]{0, 0};
+        }
+
+        int line = 0;
+        int column = 0;
+
+        for (int i = 0; i < position; i++) {
+            if (content.charAt(i) == '\n') {
+                line++;
+                column = 0;
+            } else {
+                column++;
+            }
+        }
+
+        return new int[]{line, column};
+    }
+
     public static UIModel parse(String content) {
         UIModelParser parser = new UIModelParser();
         parser.content = content;
@@ -219,6 +239,10 @@ public class UIModelParser {
         UIModel.Component component = createComponent(type, properties, children, model);
         if (component != null) {
             component.setId(id != null ? id : "component_" + (componentIdCounter++));
+
+            // Store source position for navigation
+            int[] lineCol = getLineAndColumn(startPos);
+            component.setSourcePosition(lineCol[0], lineCol[1]);
         }
 
         return component;

@@ -7,6 +7,9 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.Gray;
@@ -18,6 +21,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class UIPreviewPanel extends JPanel implements Disposable {
@@ -33,11 +40,15 @@ public class UIPreviewPanel extends JPanel implements Disposable {
     private final UIComponentRenderer renderer;
     private Disposable currentListenerDisposable;
     private JLabel zoomLabel;
+    private JLabel groupInfoLabel;
     private final Timer debounceTimer;
     private String pendingContent;
+    private VirtualFile currentFile;
+    private final Project project;
 
-    public UIPreviewPanel() {
+    public UIPreviewPanel(Project project) {
         super(new BorderLayout());
+        this.project = project;
         this.renderer = new UIComponentRenderer();
         this.debounceTimer = new Timer(DEBOUNCE_DELAY_MS, e -> {
             if (pendingContent != null) {
@@ -47,12 +58,51 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         });
         this.debounceTimer.setRepeats(false);
 
+        renderer.setSelectionListener(this::onComponentSelected);
+
         add(createScrollPane(), BorderLayout.CENTER);
         add(createToolbar(), BorderLayout.NORTH);
 
         setBackground(PREVIEW_BG);
         setOpaque(true);
         setupKeyboardShortcuts();
+    }
+
+    private void onComponentSelected(UIModel.Component component, UIModel.GroupComponent parentGroup) {
+        if (component == null) {
+            groupInfoLabel.setText("No selection");
+        } else if (parentGroup != null) {
+            String groupId = parentGroup.getId();
+            if (groupId != null && !groupId.isEmpty()) {
+                groupInfoLabel.setText("Group: " + groupId);
+            } else {
+                groupInfoLabel.setText("Group: (unnamed)");
+            }
+        } else {
+            String componentType = component.getClass().getSimpleName().replace("Component", "");
+            groupInfoLabel.setText("Component: " + componentType + " (no group)");
+        }
+
+        // Navigate to source position in editor
+        if (component != null && currentFile != null && component.getSourceLineNumber() >= 0) {
+            navigateToSource(component.getSourceLineNumber(), component.getSourceColumnNumber());
+        }
+    }
+
+    private void navigateToSource(int line, int column) {
+        if (currentFile == null || project == null) {
+            return;
+        }
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            try {
+                FileEditorManager editorManager = FileEditorManager.getInstance(project);
+                OpenFileDescriptor descriptor = new OpenFileDescriptor(project, currentFile, line, column);
+                editorManager.openTextEditor(descriptor, true);
+            } catch (Exception e) {
+                LOG.warn("Failed to navigate to source", e);
+            }
+        });
     }
 
     private JBScrollPane createScrollPane() {
@@ -113,7 +163,7 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         }
         actionMap.put(actionKey, new AbstractAction() {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 action.run();
             }
         });
@@ -155,6 +205,14 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         leftPanel.add(Box.createHorizontalStrut(5));
         leftPanel.add(createSeparator());
         leftPanel.add(zoomLabel);
+        leftPanel.add(Box.createHorizontalStrut(5));
+        leftPanel.add(createSeparator());
+
+        groupInfoLabel = new JLabel("No selection");
+        groupInfoLabel.setFont(groupInfoLabel.getFont().deriveFont(Font.PLAIN, 12f));
+        groupInfoLabel.setBorder(JBUI.Borders.empty(0, 12));
+        groupInfoLabel.setForeground(JBColor.foreground());
+        leftPanel.add(groupInfoLabel);
 
         toolbarPanel.add(leftPanel, BorderLayout.WEST);
         return toolbarPanel;
@@ -167,7 +225,7 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         return separator;
     }
 
-    private JButton createStyledButton(String text, String tooltip, java.awt.event.ActionListener listener) {
+    private JButton createStyledButton(String text, String tooltip, ActionListener listener) {
         JButton button = new JButton(text);
         button.setToolTipText(tooltip);
         button.setFocusable(false);
@@ -182,14 +240,14 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         button.setBorderPainted(true);
         button.setContentAreaFilled(true);
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
+        button.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
+            public void mouseEntered(MouseEvent e) {
                 button.setBackground(JBUI.CurrentTheme.ActionButton.hoverBackground());
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
+            public void mouseExited(MouseEvent e) {
                 button.setBackground(null);
             }
         });
@@ -206,6 +264,7 @@ public class UIPreviewPanel extends JPanel implements Disposable {
             return;
         }
 
+        this.currentFile = file;
         removeCurrentDocumentListener();
 
         try {
@@ -267,7 +326,7 @@ public class UIPreviewPanel extends JPanel implements Disposable {
         UIModel errorModel = new UIModel();
         UIModel.LabelComponent errorLabel = new UIModel.LabelComponent();
         errorLabel.setText(errorMessage);
-        errorLabel.setTextColor(com.intellij.ui.JBColor.RED);
+        errorLabel.setTextColor(JBColor.RED);
         errorLabel.setFontSize(12);
         errorModel.addComponent(errorLabel);
 

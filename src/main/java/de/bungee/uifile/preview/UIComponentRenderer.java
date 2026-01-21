@@ -4,6 +4,8 @@ import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.font.TextAttribute;
 import java.awt.image.VolatileImage;
 import java.util.*;
@@ -24,11 +26,141 @@ public class UIComponentRenderer extends JPanel {
     private VolatileImage backBuffer;
     private long lastModelHash = 0;
     private boolean needsRedraw = true;
+    private UIModel.Component selectedComponent;
+    private UIModel.GroupComponent selectedGroup;
+    private SelectionListener selectionListener;
+
+    public interface SelectionListener {
+        void onComponentSelected(UIModel.Component component, UIModel.GroupComponent parentGroup);
+    }
+
+    public void setSelectionListener(SelectionListener listener) {
+        this.selectionListener = listener;
+    }
 
     public UIComponentRenderer() {
         super();
         setOpaque(true);
         setBackground(new JBColor(Gray._24, Gray._24));
+        setupMouseListener();
+    }
+
+    private void setupMouseListener() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                handleComponentClick(e.getX(), e.getY());
+            }
+        });
+
+        setToolTipText(""); // Enable tooltips
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent event) {
+        if (model == null) {
+            return null;
+        }
+
+        int x = (int) (event.getX() / scale);
+        int y = (int) (event.getY() / scale);
+
+        UIModel.Component component = findComponentAt(x, y, model.getTopLevelComponents());
+        if (component != null) {
+            UIModel.GroupComponent parentGroup = findParentGroup(component);
+            if (parentGroup != null) {
+                String groupId = parentGroup.getId();
+                if (groupId != null && !groupId.isEmpty()) {
+                    return "Group: " + groupId;
+                }
+                return "Group (no ID)";
+            }
+        }
+        return null;
+    }
+
+    private void handleComponentClick(int mouseX, int mouseY) {
+        if (model == null) {
+            return;
+        }
+
+        int x = (int) (mouseX / scale);
+        int y = (int) (mouseY / scale);
+
+        UIModel.Component clicked = findComponentAt(x, y, model.getTopLevelComponents());
+        if (clicked != null) {
+            selectedComponent = clicked;
+            selectedGroup = findParentGroup(clicked);
+            needsRedraw = true;
+            repaint();
+
+            // Notify listener
+            if (selectionListener != null) {
+                selectionListener.onComponentSelected(selectedComponent, selectedGroup);
+            }
+        } else {
+            selectedComponent = null;
+            selectedGroup = null;
+            needsRedraw = true;
+            repaint();
+
+            // Notify listener about deselection
+            if (selectionListener != null) {
+                selectionListener.onComponentSelected(null, null);
+            }
+        }
+    }
+
+    private UIModel.Component findComponentAt(int x, int y, List<UIModel.Component> components) {
+        // Search in reverse order to find topmost component
+        for (int i = components.size() - 1; i >= 0; i--) {
+            UIModel.Component component = components.get(i);
+
+            if (!component.isVisible()) {
+                continue;
+            }
+
+            // Check if point is within component bounds
+            if (x >= component.x && x <= component.x + component.width &&
+                y >= component.y && y <= component.y + component.height) {
+
+                // If it's a group, check children first
+                if (component instanceof UIModel.GroupComponent group) {
+                    UIModel.Component childResult = findComponentAt(x, y, group.getChildren());
+                    if (childResult != null) {
+                        return childResult;
+                    }
+                }
+
+                return component;
+            }
+        }
+        return null;
+    }
+
+    private UIModel.GroupComponent findParentGroup(UIModel.Component target) {
+        if (model == null) {
+            return null;
+        }
+        return findParentGroupRecursive(target, model.getTopLevelComponents(), null);
+    }
+
+    private UIModel.GroupComponent findParentGroupRecursive(UIModel.Component target,
+        List<UIModel.Component> components,
+        UIModel.GroupComponent currentParent) {
+        for (UIModel.Component component : components) {
+            if (component == target) {
+                return currentParent;
+            }
+
+            if (component instanceof UIModel.GroupComponent group) {
+                UIModel.GroupComponent result = findParentGroupRecursive(target, group.getChildren(), group);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     public void setModel(UIModel model) {
@@ -431,7 +563,29 @@ public class UIComponentRenderer extends JPanel {
 
         drawComponentSpecific(g, component);
 
+        // Highlight selected component
+        if (component == selectedComponent) {
+            drawSelectionHighlight(g, component, new JBColor(new Color(0, 120, 215), new Color(0, 120, 215)));
+        } else if (selectedGroup != null && component == selectedGroup) {
+            drawSelectionHighlight(g, component, new JBColor(new Color(255, 165, 0, 150), new Color(255, 165, 0, 150)));
+        }
+
         g.setComposite(oldComposite);
+    }
+
+    private void drawSelectionHighlight(Graphics2D g, UIModel.Component component, Color highlightColor) {
+        Stroke oldStroke = g.getStroke();
+        g.setColor(highlightColor);
+        g.setStroke(new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+
+        if (component.getBorderRadius() > 0) {
+            g.drawRoundRect(component.x, component.y, component.width, component.height,
+                component.getBorderRadius(), component.getBorderRadius());
+        } else {
+            g.drawRect(component.x, component.y, component.width, component.height);
+        }
+
+        g.setStroke(oldStroke);
     }
 
     private void drawShadow(Graphics2D g, UIModel.Component component) {

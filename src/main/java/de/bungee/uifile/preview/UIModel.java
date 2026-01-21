@@ -84,6 +84,10 @@ public class UIModel {
         protected String horizontalAlignment = "Left";
         protected String verticalAlignment = "Top";
 
+        // Source code position for navigation
+        protected int sourceLineNumber = -1;
+        protected int sourceColumnNumber = -1;
+
         public void setDimensions(int w, int h) {
             this.prefWidth = w;
             this.prefHeight = h;
@@ -192,6 +196,19 @@ public class UIModel {
 
         public String getId() {
             return id;
+        }
+
+        public void setSourcePosition(int lineNumber, int columnNumber) {
+            this.sourceLineNumber = lineNumber;
+            this.sourceColumnNumber = columnNumber;
+        }
+
+        public int getSourceLineNumber() {
+            return sourceLineNumber;
+        }
+
+        public int getSourceColumnNumber() {
+            return sourceColumnNumber;
         }
 
         public void setStyleRef(String styleRef) {
