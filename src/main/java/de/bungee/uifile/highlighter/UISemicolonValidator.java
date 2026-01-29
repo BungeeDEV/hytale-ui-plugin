@@ -319,8 +319,8 @@ public class UISemicolonValidator implements Annotator {
                     // Check if this is a style reference (value) or a new statement
                     // If we just saw a colon, this @ is a reference value, not a new statement
                     PsiElement beforeThis = skipWhitespaceBackward(PsiTreeUtil.prevLeaf(next));
-                    if (beforeThis != null && beforeThis.getText().trim().equals(":")) {
-                        // This is a style reference like "Style: @ButtonStyle"
+                    if (beforeThis != null && (beforeThis.getText().trim().equals(":") || beforeThis.getText().trim().equals("."))) {
+                        // This is a style reference like "Style: @ButtonStyle" or "Style: $Common.@ButtonStyle
                         lastElement = next;
                         current = next;
                         continue;
